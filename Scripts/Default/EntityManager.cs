@@ -118,6 +118,19 @@ namespace UniT.Entities.Default
             return this.typeToSpawnedComponents.GetOrDefault(typeof(T))?.Cast<T>() ?? Enumerable.Empty<T>();
         }
 
+        void IDisposable.Dispose()
+        {
+            this.trackingKeys.Clear(this.objectPoolManager.Unload);
+            this.trackingPrefabs.Clear(this.objectPoolManager.Unload);
+
+            this.objectPoolManager.Instantiated -= this.OnInstantiated;
+            this.objectPoolManager.Spawned      -= this.OnSpawned;
+            this.objectPoolManager.Recycled     -= this.OnRecycled;
+            this.objectPoolManager.CleanedUp    -= this.OnCleanedUp;
+
+            this.logger.Debug("Disposed");
+        }
+
         #endregion
 
         #region Private
@@ -197,28 +210,6 @@ namespace UniT.Entities.Default
             this.componentToTypes.RemoveRange(components);
             foreach (var component in components.AsSpan()) component.OnCleanup();
             this.cleanedUp?.Invoke(entity, components);
-        }
-
-        #endregion
-
-        #region Finalizer
-
-        private void Dispose()
-        {
-            this.trackingKeys.Clear(this.objectPoolManager.Unload);
-            this.trackingPrefabs.Clear(this.objectPoolManager.Unload);
-        }
-
-        void IDisposable.Dispose()
-        {
-            this.Dispose();
-            this.logger.Debug("Disposed");
-        }
-
-        ~EntityManager()
-        {
-            this.Dispose();
-            this.logger.Debug("Finalized");
         }
 
         #endregion

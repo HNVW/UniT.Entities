@@ -45,7 +45,7 @@ namespace UniT.Entities
 
         public void Unload(object key);
 
-        public IEnumerable<T> Query<T>();
+        public IEnumerable<T> Query<T>() where T : notnull;
 
         #region Implicit Key
 
