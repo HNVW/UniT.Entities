@@ -140,7 +140,7 @@ namespace UniT.Entities.Default
         private Action<IEntity, IReadOnlyList<IComponent>>? recycled;
         private Action<IEntity, IReadOnlyList<IComponent>>? cleanedUp;
 
-        private object nextParams = null!;
+        private object? nextParams;
 
         private void OnInstantiated(GameObject instance)
         {
@@ -168,9 +168,10 @@ namespace UniT.Entities.Default
         private void OnSpawned(GameObject instance)
         {
             if (!this.objToEntity.TryGetValue(instance, out var entity)) return;
-            if (entity is IEntityWithParams entityWithParams)
+            if (this.nextParams is not null)
             {
-                entityWithParams.Params = this.nextParams;
+                ((IEntityWithParams)entity).Params = this.nextParams;
+                this.nextParams                    = null;
             }
             var components = this.entityToComponents[entity];
             foreach (var component in components.AsSpan())
