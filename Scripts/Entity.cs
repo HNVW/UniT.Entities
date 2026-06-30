@@ -10,7 +10,7 @@ namespace UniT.Entities
         public void Recycle() => this.Manager.Recycle(this);
     }
 
-    public class Entity : BaseEntity, IEntityWithoutParams
+    public abstract class Entity : BaseEntity, IEntityWithoutParams
     {
     }
 

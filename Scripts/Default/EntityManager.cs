@@ -14,7 +14,7 @@ namespace UniT.Entities.Default
     using UnityEngine.Scripting;
     using ILogger = UniT.Logging.ILogger;
 
-    public sealed class EntityManager : IEntityManager
+    public sealed class EntityManager : IEntityManager, IDisposable
     {
         #region Constructor
 
@@ -22,12 +22,11 @@ namespace UniT.Entities.Default
         private readonly IObjectPoolManager   objectPoolManager;
         private readonly ILogger              logger;
 
-        private readonly HashSet<object>                       trackingKeys            = new();
-        private readonly HashSet<GameObject>                   trackingPrefabs         = new();
-        private readonly Dictionary<GameObject, IEntity>       objToEntity             = new();
-        private readonly Dictionary<IEntity, IComponent[]>     entityToComponents      = new();
-        private readonly Dictionary<IComponent, Type[]>        componentToTypes        = new();
-        private readonly Dictionary<Type, HashSet<IComponent>> typeToSpawnedComponents = new();
+        private readonly HashSet<object>                                                   trackingKeys            = new();
+        private readonly HashSet<GameObject>                                               trackingPrefabs         = new();
+        private readonly Dictionary<GameObject, (IEntity Entity, IComponent[] Components)> objToEntity             = new();
+        private readonly Dictionary<IComponent, Type[]>                                    componentToTypes        = new();
+        private readonly Dictionary<Type, HashSet<IComponent>>                             typeToSpawnedComponents = new();
 
         [Preserve]
         public EntityManager(IDependencyContainer container, IObjectPoolManager objectPoolManager, ILoggerManager loggerManager)
@@ -145,9 +144,8 @@ namespace UniT.Entities.Default
         private void OnInstantiated(GameObject instance)
         {
             if (!instance.TryGetComponent<IEntity>(out var entity)) return;
-            this.objToEntity.Add(instance, entity);
             var components = entity.gameObject.GetComponentsInChildren<IComponent>();
-            this.entityToComponents.Add(entity, components);
+            this.objToEntity.Add(instance, (entity, components));
             foreach (var component in components.AsSpan())
             {
                 this.componentToTypes.Add(
@@ -167,13 +165,13 @@ namespace UniT.Entities.Default
 
         private void OnSpawned(GameObject instance)
         {
-            if (!this.objToEntity.TryGetValue(instance, out var entity)) return;
+            if (!this.objToEntity.TryGetValue(instance, out var value)) return;
+            var (entity, components) = value;
             if (this.nextParams is not null)
             {
                 ((IEntityWithParams)entity).Params = this.nextParams;
                 this.nextParams                    = null;
             }
-            var components = this.entityToComponents[entity];
             foreach (var component in components.AsSpan())
             {
                 foreach (var type in this.componentToTypes[component].AsSpan())
@@ -187,8 +185,8 @@ namespace UniT.Entities.Default
 
         private void OnRecycled(GameObject instance)
         {
-            if (!this.objToEntity.TryGetValue(instance, out var entity)) return;
-            var components = this.entityToComponents[entity];
+            if (!this.objToEntity.TryGetValue(instance, out var value)) return;
+            var (entity, components) = value;
             foreach (var component in components.AsSpan())
             {
                 foreach (var type in this.componentToTypes[component].AsSpan())
@@ -206,8 +204,8 @@ namespace UniT.Entities.Default
 
         private void OnCleanedUp(GameObject instance)
         {
-            if (!this.objToEntity.Remove(instance, out var entity)) return;
-            this.entityToComponents.Remove(entity, out var components);
+            if (!this.objToEntity.Remove(instance, out var value)) return;
+            var (entity, components) = value;
             this.componentToTypes.RemoveRange(components);
             foreach (var component in components.AsSpan()) component.OnCleanup();
             this.cleanedUp?.Invoke(entity, components);

@@ -9,7 +9,7 @@ namespace UniT.Entities
     using UniT.Extensions;
     using UnityEngine;
 
-    public interface IEntityManager : IDisposable
+    public interface IEntityManager
     {
         public event Action<IEntity, IReadOnlyList<IComponent>> Instantiated;
 
