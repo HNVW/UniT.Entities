@@ -1,5 +1,7 @@
 {
   "name": "UniT.Entities.Default.InternalDI",
+  "overrideReferences": true,
+  "noEngineReferences": true,
   "references": [
     "UniT.Entities.Default",
     "UniT.DI.InternalDI"

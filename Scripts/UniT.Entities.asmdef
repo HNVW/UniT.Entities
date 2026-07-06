@@ -1,5 +1,6 @@
 {
   "name": "UniT.Entities",
+  "overrideReferences": true,
   "references": [
     "UniT.Extensions",
     "UniT.DI",
