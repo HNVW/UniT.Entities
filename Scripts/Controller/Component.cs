@@ -13,7 +13,7 @@ namespace UniT.Entities.Controller
         {
             var controller = (TController)this.Container.Instantiate(this.ControllerType);
             controller.Component = this;
-            this.Controller      = controller;
+            this.Controller = controller;
             this.OnInstantiate();
             this.Controller.OnInstantiate();
         }

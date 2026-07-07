@@ -12,33 +12,33 @@ namespace UniT.Entities.Default
     using UniT.Pooling;
     using UnityEngine;
     using UnityEngine.Scripting;
-    using ILogger = UniT.Logging.ILogger;
+    using ILogger = Logging.ILogger;
 
     public sealed class EntityManager : IEntityManager, IDisposable
     {
         #region Constructor
 
         private readonly IDependencyContainer container;
-        private readonly IObjectPoolManager   objectPoolManager;
-        private readonly ILogger              logger;
+        private readonly IObjectPoolManager objectPoolManager;
+        private readonly ILogger logger;
 
-        private readonly HashSet<object>                                                   trackingKeys            = new();
-        private readonly HashSet<GameObject>                                               trackingPrefabs         = new();
-        private readonly Dictionary<GameObject, (IEntity Entity, IComponent[] Components)> objToEntity             = new();
-        private readonly Dictionary<IComponent, Type[]>                                    componentToTypes        = new();
-        private readonly Dictionary<Type, HashSet<IComponent>>                             typeToSpawnedComponents = new();
+        private readonly HashSet<object> trackingKeys = new();
+        private readonly HashSet<GameObject> trackingPrefabs = new();
+        private readonly Dictionary<GameObject, (IEntity Entity, IComponent[] Components)> objToEntity = new();
+        private readonly Dictionary<IComponent, Type[]> componentToTypes = new();
+        private readonly Dictionary<Type, HashSet<IComponent>> typeToSpawnedComponents = new();
 
         [Preserve]
         public EntityManager(IDependencyContainer container, IObjectPoolManager objectPoolManager, ILoggerManager loggerManager)
         {
-            this.container         = container;
+            this.container = container;
             this.objectPoolManager = objectPoolManager;
-            this.logger            = loggerManager.GetLogger(this);
+            this.logger = loggerManager.GetLogger(this);
 
             this.objectPoolManager.Instantiated += this.OnInstantiated;
-            this.objectPoolManager.Spawned      += this.OnSpawned;
-            this.objectPoolManager.Recycled     += this.OnRecycled;
-            this.objectPoolManager.CleanedUp    += this.OnCleanedUp;
+            this.objectPoolManager.Spawned += this.OnSpawned;
+            this.objectPoolManager.Recycled += this.OnRecycled;
+            this.objectPoolManager.CleanedUp += this.OnCleanedUp;
 
             this.logger.Debug("Constructed");
         }
@@ -48,9 +48,9 @@ namespace UniT.Entities.Default
         #region Public
 
         event Action<IEntity, IReadOnlyList<IComponent>> IEntityManager.Instantiated { add => this.instantiated += value; remove => this.instantiated -= value; }
-        event Action<IEntity, IReadOnlyList<IComponent>> IEntityManager.Spawned      { add => this.spawned += value;      remove => this.spawned -= value; }
-        event Action<IEntity, IReadOnlyList<IComponent>> IEntityManager.Recycled     { add => this.recycled += value;     remove => this.recycled -= value; }
-        event Action<IEntity, IReadOnlyList<IComponent>> IEntityManager.CleanedUp    { add => this.cleanedUp += value;    remove => this.cleanedUp -= value; }
+        event Action<IEntity, IReadOnlyList<IComponent>> IEntityManager.Spawned { add => this.spawned += value; remove => this.spawned -= value; }
+        event Action<IEntity, IReadOnlyList<IComponent>> IEntityManager.Recycled { add => this.recycled += value; remove => this.recycled -= value; }
+        event Action<IEntity, IReadOnlyList<IComponent>> IEntityManager.CleanedUp { add => this.cleanedUp += value; remove => this.cleanedUp -= value; }
 
         void IEntityManager.Load(IEntity prefab, int count)
         {
@@ -123,9 +123,9 @@ namespace UniT.Entities.Default
             this.trackingPrefabs.Clear(this.objectPoolManager.Unload);
 
             this.objectPoolManager.Instantiated -= this.OnInstantiated;
-            this.objectPoolManager.Spawned      -= this.OnSpawned;
-            this.objectPoolManager.Recycled     -= this.OnRecycled;
-            this.objectPoolManager.CleanedUp    -= this.OnCleanedUp;
+            this.objectPoolManager.Spawned -= this.OnSpawned;
+            this.objectPoolManager.Recycled -= this.OnRecycled;
+            this.objectPoolManager.CleanedUp -= this.OnCleanedUp;
 
             this.logger.Debug("Disposed");
         }
@@ -156,8 +156,8 @@ namespace UniT.Entities.Default
                         .ToArray()
                 );
                 component.Container = this.container;
-                component.Manager   = this;
-                component.Entity    = entity;
+                component.Manager = this;
+                component.Entity = entity;
             }
             foreach (var component in components.AsSpan()) component.OnInstantiate();
             this.instantiated?.Invoke(entity, components);
@@ -170,7 +170,7 @@ namespace UniT.Entities.Default
             if (this.nextParams is not null)
             {
                 ((IEntityWithParams)entity).Params = this.nextParams;
-                this.nextParams                    = null;
+                this.nextParams = null;
             }
             foreach (var component in components.AsSpan())
             {

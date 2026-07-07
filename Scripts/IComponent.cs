@@ -12,7 +12,9 @@ namespace UniT.Entities
 
         public IEntity Entity { get; set; }
 
+#pragma warning disable IDE1006 // Naming Styles
         // ReSharper disable once InconsistentNaming
         public GameObject gameObject { get; }
+#pragma warning restore IDE1006 // Naming Styles
     }
 }
