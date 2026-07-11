@@ -1,6 +1,8 @@
 #nullable enable
 namespace UniT.Entities
 {
+    using System.Diagnostics.CodeAnalysis;
+    using System.Threading;
     using UniT.DI;
     using UnityEngine;
 
@@ -13,8 +15,47 @@ namespace UniT.Entities
         public IEntity Entity { get; set; }
 
 #pragma warning disable IDE1006 // Naming Styles
-        // ReSharper disable once InconsistentNaming
+        // ReSharper disable InconsistentNaming
         public GameObject gameObject { get; }
+
+        public Transform transform { get; }
+        // ReSharper restore InconsistentNaming
 #pragma warning restore IDE1006 // Naming Styles
+
+        #region Extensions
+
+        public T? GetComponentOrDefault<T>() where T : notnull;
+
+        public T GetComponent<T>() where T : notnull;
+
+        public T[] GetComponents<T>() where T : notnull;
+
+        public bool HasComponent<T>() where T : notnull;
+
+        public bool TryGetComponent<T>([MaybeNullWhen(false)] out T component) where T : notnull;
+
+        public T? GetComponentInChildrenOrDefault<T>(bool includeInactive = false) where T : notnull;
+
+        public T GetComponentInChildren<T>(bool includeInactive = false) where T : notnull;
+
+        public T[] GetComponentsInChildren<T>(bool includeInactive = false) where T : notnull;
+
+        public bool HasComponentInChildren<T>(bool includeInactive = false) where T : notnull;
+
+        public bool TryGetComponentInChildren<T>([MaybeNullWhen(false)] out T component, bool includeInactive = false) where T : notnull;
+
+        public T? GetComponentInParentOrDefault<T>(bool includeInactive = false) where T : notnull;
+
+        public T GetComponentInParent<T>(bool includeInactive = false) where T : notnull;
+
+        public T[] GetComponentsInParent<T>(bool includeInactive = false) where T : notnull;
+
+        public bool HasComponentInParent<T>(bool includeInactive = false) where T : notnull;
+
+        public bool TryGetComponentInParent<T>([MaybeNullWhen(false)] out T component, bool includeInactive = false) where T : notnull;
+
+        public CancellationToken GetCancellationTokenOnDisable();
+
+        #endregion
     }
 }
