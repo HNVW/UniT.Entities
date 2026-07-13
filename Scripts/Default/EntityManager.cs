@@ -1,5 +1,5 @@
 #nullable enable
-namespace UniT.Entities.Default
+namespace UniT.Entities
 {
     using System;
     using System.Collections.Generic;

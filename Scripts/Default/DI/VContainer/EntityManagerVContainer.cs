@@ -1,5 +1,5 @@
 #nullable enable
-namespace UniT.Entities.Default.DI
+namespace UniT.Entities.DI
 {
     using VContainer;
 
