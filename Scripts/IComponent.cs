@@ -3,7 +3,7 @@ namespace UniT.Entities
 {
     using System.Diagnostics.CodeAnalysis;
     using System.Threading;
-    using UniT.DI;
+    using DI;
     using UnityEngine;
 
     public interface IComponent : IComponentLifecycle
@@ -14,13 +14,9 @@ namespace UniT.Entities
 
         public IEntity Entity { get; set; }
 
-#pragma warning disable IDE1006 // Naming Styles
-        // ReSharper disable InconsistentNaming
         public GameObject gameObject { get; }
 
         public Transform transform { get; }
-        // ReSharper restore InconsistentNaming
-#pragma warning restore IDE1006 // Naming Styles
 
         #region Extensions
 

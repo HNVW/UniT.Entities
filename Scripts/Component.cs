@@ -3,9 +3,8 @@ namespace UniT.Entities
 {
     using System.Diagnostics.CodeAnalysis;
     using System.Threading;
-    using Cysharp.Threading.Tasks;
-    using UniT.DI;
-    using UniT.Extensions;
+    using DI;
+    using Extensions;
     using UnityEngine;
 
     public abstract class Component : MonoBehaviour, IComponent

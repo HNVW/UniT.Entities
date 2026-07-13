@@ -6,10 +6,10 @@ namespace UniT.Entities.Default
     using System.Linq;
     using System.Threading;
     using Cysharp.Threading.Tasks;
-    using UniT.DI;
-    using UniT.Extensions;
-    using UniT.Logging;
-    using UniT.Pooling;
+    using DI;
+    using Extensions;
+    using Logging;
+    using Pooling;
     using UnityEngine;
     using UnityEngine.Scripting;
     using ILogger = Logging.ILogger;
