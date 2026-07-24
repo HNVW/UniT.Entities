@@ -146,7 +146,7 @@ namespace UniT.Entities
             if (!instance.TryGetComponent<IEntity>(out var entity)) return;
             var components = entity.gameObject.GetComponentsInChildren<IComponent>();
             this.objToEntity.Add(instance, (entity, components));
-            foreach (var component in components.AsSpan())
+            foreach (var component in components)
             {
                 this.componentToTypes.Add(
                     component,
@@ -159,7 +159,7 @@ namespace UniT.Entities
                 component.Manager = this;
                 component.Entity = entity;
             }
-            foreach (var component in components.AsSpan()) component.OnInstantiate();
+            foreach (var component in components) component.OnInstantiate();
             this.instantiated?.Invoke(entity, components);
         }
 
@@ -172,14 +172,14 @@ namespace UniT.Entities
                 ((IEntityWithParams)entity).Params = this.nextParams;
                 this.nextParams = null;
             }
-            foreach (var component in components.AsSpan())
+            foreach (var component in components)
             {
-                foreach (var type in this.componentToTypes[component].AsSpan())
+                foreach (var type in this.componentToTypes[component])
                 {
                     this.typeToSpawnedComponents.GetOrAdd(type).Add(component);
                 }
             }
-            foreach (var component in components.AsSpan()) component.OnSpawn();
+            foreach (var component in components) component.OnSpawn();
             this.spawned?.Invoke(entity, components);
         }
 
@@ -187,14 +187,14 @@ namespace UniT.Entities
         {
             if (!this.objToEntity.TryGetValue(instance, out var value)) return;
             var (entity, components) = value;
-            foreach (var component in components.AsSpan())
+            foreach (var component in components)
             {
-                foreach (var type in this.componentToTypes[component].AsSpan())
+                foreach (var type in this.componentToTypes[component])
                 {
                     this.typeToSpawnedComponents[type].Remove(component);
                 }
             }
-            foreach (var component in components.AsSpan()) component.OnRecycle();
+            foreach (var component in components) component.OnRecycle();
             if (entity is IEntityWithParams entityWithParams)
             {
                 entityWithParams.Params = null;
@@ -207,7 +207,7 @@ namespace UniT.Entities
             if (!this.objToEntity.Remove(instance, out var value)) return;
             var (entity, components) = value;
             this.componentToTypes.RemoveRange(components);
-            foreach (var component in components.AsSpan()) component.OnCleanup();
+            foreach (var component in components) component.OnCleanup();
             this.cleanedUp?.Invoke(entity, components);
         }
 
